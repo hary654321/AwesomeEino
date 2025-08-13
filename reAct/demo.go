@@ -21,7 +21,7 @@ func main() {
 	startTime := time.Now()
 	fmt.Printf("程序开始执行时间: %s\n", startTime.Format("2006-01-02 15:04:05.000"))
 
-	arkAPIKey := "56a6b406-8b6b-4bb5-b169-92117a5caa72"
+	arkAPIKey := "8e6766ee-7bdc-4f80-b678-3344fc0c3c08"
 	arkModelName := "doubao-1-5-pro-32k-250115"
 	ctx := context.Background()
 	arkModel, err := ark.NewChatModel(ctx, &ark.ChatModelConfig{
@@ -34,7 +34,7 @@ func main() {
 	}
 	addtool := GetAddTool()
 	subtool := GetSubTool()
-	analyzetool:=GetAnalyzeTool()
+	analyzetool := GetAnalyzeTool()
 	persona := `#Character:
 	你是一个幼儿园老师，会同时判断题目难易程度，给出问题的答案
 	`
@@ -71,7 +71,7 @@ func main() {
 	raAgent, err := react.NewAgent(ctx, &react.AgentConfig{
 		ToolCallingModel: arkModel,
 		ToolsConfig: compose.ToolsNodeConfig{
-			Tools: []tool.BaseTool{addtool,subtool,analyzetool},
+			Tools:               []tool.BaseTool{addtool, subtool, analyzetool},
 			ExecuteSequentially: false,
 		},
 		StreamToolCallChecker: toolCallChecker,
@@ -81,7 +81,7 @@ func main() {
 		return
 	}
 	//构建输入模板schema
-	chatmsg:=[]*schema.Message{
+	chatmsg := []*schema.Message{
 		{
 			Role:    schema.System,
 			Content: persona,
@@ -93,7 +93,7 @@ func main() {
 	}
 	//流式调用
 	//添加了loggerCallback的回调函数
-	sr, err := raAgent.Stream(ctx, chatmsg,agent.WithComposeOptions(compose.WithCallbacks(&loggerCallback{})))
+	sr, err := raAgent.Stream(ctx, chatmsg, agent.WithComposeOptions(compose.WithCallbacks(&loggerCallback{})))
 	if err != nil {
 		fmt.Printf("failed to stream: %v", err)
 		return
@@ -118,7 +118,7 @@ func main() {
 	fmt.Printf("%s", finalContent)
 	fmt.Printf("\n\n===== finished =====\n")
 
-		// 计算并打印运行时间
+	// 计算并打印运行时间
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 	fmt.Printf("\n程序结束执行时间: %s\n", endTime.Format("2006-01-02 15:04:05.000"))

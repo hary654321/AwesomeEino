@@ -4,12 +4,27 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/cloudwego/eino-ext/components/model/ark"
 	"github.com/cloudwego/eino/components/tool"
+	"github.com/cloudwego/eino/compose"
 	"github.com/cloudwego/eino/schema"
 )
+
+// newToolsNode component initialization function of node 'ToolsNode1' in graph 'test'
+func newToolsNode(ctx context.Context) (tsn *compose.ToolsNode, err error) {
+	config := &compose.ToolsNodeConfig{}
+	toolIns11 := GetAddTool()
+
+	toolIns12 := GetSubTool()
+	toolIns13 := GetAnalyzeTool()
+	config.Tools = []tool.BaseTool{toolIns11, toolIns12, toolIns13}
+	tsn, err = compose.NewToolNode(ctx, config)
+	if err != nil {
+		return nil, err
+	}
+	return tsn, nil
+}
 
 type AddTool struct {
 }
@@ -123,8 +138,8 @@ func (a *AnalyzeTool) InvokableRun(ctx context.Context, argumentsInJSON string, 
 		return "", err
 	}
 	//调用模型
-	arkAPIKey := os.Getenv("ARK_API_KEY")
-	arkModelName := os.Getenv("ARK_MODEL_NAME")
+	arkAPIKey := "8e6766ee-7bdc-4f80-b678-3344fc0c3c08"
+	arkModelName := "doubao-seed-1-6"
 	arkModel, err := ark.NewChatModel(ctx, &ark.ChatModelConfig{
 		APIKey: arkAPIKey,
 		Model:  arkModelName,

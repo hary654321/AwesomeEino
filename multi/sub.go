@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/cloudwego/eino-ext/components/model/ark"
 	"github.com/cloudwego/eino/components/tool"
@@ -14,24 +15,24 @@ import (
 )
 
 func newSubSpecialist(ctx context.Context) (*host.Specialist, error) {
-	arkAPIKey := "56a6b406-8b6b-4bb5-b169-92117a5caa72"
-	arkModelName := "doubao-1-5-pro-32k-250115"
+	arkAPIKey := os.Getenv("ARK_API_KEY")
+	arkModelName := os.Getenv("ARK_MODEL_NAME")
 	chatModel, err := ark.NewChatModel(ctx, &ark.ChatModelConfig{
 		APIKey: arkAPIKey,
 		Model:  arkModelName,
 	})
 	if err != nil {
 		fmt.Printf("failed to create chat model: %v", err)
-		return nil,err
+		return nil, err
 	}
-	subtool:=GetSubTool()
+	subtool := GetSubTool()
 	raAgent, err := react.NewAgent(ctx, &react.AgentConfig{
 		ToolCallingModel: chatModel,
 		ToolsConfig: compose.ToolsNodeConfig{
 			Tools: []tool.BaseTool{subtool},
 		},
 	})
-	if err!= nil {
+	if err != nil {
 		return nil, err
 	}
 	return &host.Specialist{
@@ -43,5 +44,5 @@ func newSubSpecialist(ctx context.Context) (*host.Specialist, error) {
 			return raAgent.Generate(ctx, input, opts...)
 		},
 	}, nil
-	
+
 }

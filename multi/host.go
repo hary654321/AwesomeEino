@@ -19,21 +19,22 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/cloudwego/eino-ext/components/model/ark"
 	"github.com/cloudwego/eino/flow/agent/multiagent/host"
 )
- 
- func newHost(ctx context.Context) (*host.Host, error) {
-	arkAPIKey := "56a6b406-8b6b-4bb5-b169-92117a5caa72"
-	arkModelName := "doubao-1-5-pro-32k-250115"
+
+func newHost(ctx context.Context) (*host.Host, error) {
+	arkAPIKey := os.Getenv("ARK_API_KEY")
+	arkModelName := os.Getenv("ARK_MODEL_NAME")
 	chatModel, err := ark.NewChatModel(ctx, &ark.ChatModelConfig{
 		APIKey: arkAPIKey,
 		Model:  arkModelName,
 	})
 	if err != nil {
 		fmt.Printf("failed to create chat model: %v", err)
-		return nil,err
+		return nil, err
 	}
 
 	return &host.Host{
@@ -41,5 +42,3 @@ import (
 		SystemPrompt: "你可以同时计算加法和减法。当用户提问时，你需要回答问题。",
 	}, nil
 }
-
- 
