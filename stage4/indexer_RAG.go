@@ -99,3 +99,24 @@ func floatDocumentConverter(ctx context.Context, docs []*schema.Document, vector
 	}
 	return rows, nil
 }
+
+func Test() {
+	println("Test function in indexer_RAG.go")
+	docs := []*schema.Document{
+		{
+			ID:      "doc1",
+			Content: "This is the content of document 1.",
+			MetaData: map[string]any{
+				"source": "source1",
+			},
+		},
+		{
+			ID:      "doc2",
+			Content: "This is the content of document 2.",
+			MetaData: map[string]any{
+				"source": "source2",
+			},
+		},
+	}
+	IndexerRAG(docs)
+}

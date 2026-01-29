@@ -26,7 +26,7 @@ func ChatGenerate() {
 	// 准备消息
 	messages := []*schema.Message{
 		schema.SystemMessage("你是一个助手"),
-		schema.UserMessage("你好"),
+		schema.UserMessage("请介绍一下云风Eino框架"),
 	}
 
 	// 生成回复

@@ -1,56 +1,72 @@
 package main
 
 import (
-	"AwesomeEino/stage9"
-	"context"
+	"AwesomeEino/embed"
+	"AwesomeEino/stage4"
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
-	ccb "github.com/cloudwego/eino-ext/callbacks/cozeloop"
-	"github.com/cloudwego/eino/callbacks"
-	"github.com/coze-dev/cozeloop-go"
+	"github.com/cloudwego/eino/schema"
 	"github.com/joho/godotenv"
 )
 
-func main() {
+func init() {
 	err := godotenv.Load() // 加载环境变量
 	if err != nil {
 		log.Fatal("Error loading .env file") // 处理加载错误
 	}
-	ctx := context.Background()
-	client, err := cozeloop.NewClient()
-    if err != nil {
-       panic(err)
-    }
-    defer client.Close(ctx)
-    // 在服务 init 时 once 调用
-    handler := ccb.NewLoopHandler(client)
-    callbacks.AppendGlobalHandlers(handler)
-	// stage9.OrcGraphWithModel(ctx, map[string]string{"role": "cute", "content": "你好啊"})
-	// stage9.OrcGraphWithState(ctx, map[string]string{"role": "cute", "content": "你好啊"})
-	// stage9.OrcGraphWithCallback(ctx, map[string]string{"role": "cute", "content": "你好啊"})
-	g := stage9.OutSideOrcGraph(ctx)
-	r, err := g.Compile(ctx)
-	if err != nil {
-		panic(err)
-	}
-	result, err := r.Invoke(ctx, map[string]string{"role": "cute", "content": "你好啊"})
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(result)
+}
+func main() {
+	stage4.DemoInsertToMilvus()
+}
 
-	// r, err := stage10.Buildtest(ctx)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// variables := map[string]any{
-	// 	"role": "可爱的女子高中生",
-	// 	"task": "安慰一下我",
-	// }
-	// output, err := r.Invoke(ctx, variables)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(output)
+func TestIndexerRAG() {
+	println("=== Indexer RAG Example ===")
+	docs := []*schema.Document{
+		{
+			ID:      "doc1",
+			Content: "This is the content of document 1.",
+			MetaData: map[string]any{
+				"source": "source1",
+			},
+		},
+		{
+			ID:      "doc2",
+			Content: "This is the content of document 2.",
+			MetaData: map[string]any{
+				"source": "source2",
+			},
+		},
+	}
+	stage4.IndexerRAG(docs)
+}
+
+func TestEmbedStrings() {
+	// Example 1: Embed text strings
+	fmt.Println("=== Text Embedding Example ===")
+	result, err := embed.EmbedStrings([]string{"Hello, world!", "Multimodal embeddings are powerful."})
+	if err != nil {
+		log.Fatalf("Text embedding error: %v", err)
+	}
+
+	//写入文件
+	jsonIndentWrite("result.json", result)
+
+	// Example 2: Show specific fields
+	fmt.Println("\n=== Key Fields ===")
+	fmt.Printf("Model: %s\n", result.Model)
+	fmt.Printf("Created: %d\n", result.Created)
+	fmt.Printf("Object: %s\n", result.Object)
+	fmt.Printf("ID: %s\n", result.ID)
+	fmt.Printf("Usage - Total Tokens: %d\n", result.Usage.TotalTokens)
+}
+
+func jsonIndentWrite(filename string, v any) error {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, b, 0644)
 }

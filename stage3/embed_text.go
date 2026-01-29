@@ -2,6 +2,7 @@ package stage3
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
@@ -13,6 +14,8 @@ func EmbedText() {
 
 	// 初始化嵌入器
 	timeout := 30 * time.Second
+	fmt.Println("Using API key:", os.Getenv("ARK_API_KEY"))
+	fmt.Println("Using embedder model:", os.Getenv("EMBEDDER"))
 	embedder, err := ark.NewEmbedder(ctx, &ark.EmbeddingConfig{
 		APIKey:  os.Getenv("ARK_API_KEY"),
 		Model:   os.Getenv("EMBEDDER"),
